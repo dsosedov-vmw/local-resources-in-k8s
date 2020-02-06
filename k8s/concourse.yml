@@ -1,0 +1,66 @@
+# TODO: the UI and the database connection work but worker connections fail - need to figure that out
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: concourse
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: concourse-configmap
+  namespace: concourse
+data:
+  CONCOURSE_POSTGRES_HOST: postgres-internal-service.postgres.svc.cluster.local
+  CONCOURSE_POSTGRES_USER: postgresadmin
+  CONCOURSE_POSTGRES_PASSWORD: postgresadmin
+  # TODO: need to figure out how to create it on a fly
+  CONCOURSE_POSTGRES_DATABASE: concourse
+  CONCOURSE_EXTERNAL_URL: http://kube:30001 # Modify this to match your setup
+  CONCOURSE_ADD_LOCAL_USER: test:test
+  CONCOURSE_MAIN_TEAM_LOCAL_USER: test
+  CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concourse-external-service
+  namespace: concourse
+spec:
+  ports:
+  - name: http
+    nodePort: 30001
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: concourse
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concourse
+  namespace: concourse
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concourse
+  template:
+    metadata:
+      labels:
+        app: concourse
+    spec:
+      containers:
+      - args:
+        - quickstart
+        envFrom:
+        - configMapRef:
+            name: concourse-configmap
+        name: concourse
+        image: concourse/concourse
+        ports:
+        - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: true
