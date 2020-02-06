@@ -33,9 +33,22 @@ spec:
     app: rabbitmq
   type: NodePort
 ---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rabbitmq-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 100Mi
+  hostPath:
+    path: /var/persistent/rabbitmq
+  storageClassName: standard
+  volumeMode: Filesystem
+---
 apiVersion: apps/v1
-# TODO: rewrite as a StatefulSet
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: rabbitmq
   namespace: rabbitmq
@@ -44,6 +57,7 @@ spec:
   selector:
     matchLabels:
       app: rabbitmq
+  serviceName: rabbitmq-service
   template:
     metadata:
       labels:
@@ -57,3 +71,15 @@ spec:
         - containerPort: 5672
         - containerPort: 25672
         - containerPort: 15672
+        volumeMounts:
+        - name: rabbitmq-pvc
+          mountPath: /var/lib/rabbitmq
+  volumeClaimTemplates:
+  - metadata:
+      name: rabbitmq-pvc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 100Mi
