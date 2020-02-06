@@ -15,7 +15,21 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq-service
+  name: rabbitmq-internal-service
+  namespace: rabbitmq
+spec:
+  ports:
+  - port: 5672
+    protocol: TCP
+    targetPort: 5672
+  selector:
+    app: rabbitmq
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-external-service
   namespace: rabbitmq
 spec:
   ports:
