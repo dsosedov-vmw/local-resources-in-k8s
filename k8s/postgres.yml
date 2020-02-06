@@ -16,6 +16,20 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
+  name: postgres-internal-service
+  namespace: postgres
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: postgres
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: postgres-external-service
   namespace: postgres
 spec:
