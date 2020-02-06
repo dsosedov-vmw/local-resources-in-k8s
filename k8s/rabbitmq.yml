@@ -64,7 +64,10 @@ spec:
         app: rabbitmq
     spec:
       containers:
-      - name: rabbitmq
+      - envFrom:
+        - configMapRef:
+            name: rabbitmq-configmap
+        name: rabbitmq
         image: rabbitmq:management
         ports:
         - containerPort: 4369
