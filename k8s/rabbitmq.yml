@@ -90,7 +90,6 @@ spec:
         - containerPort: 15672
         volumeMounts:
         - name: rabbitmq-pvc
-          # TODO: I think I lost a queue... perhaps not a complete path?
           mountPath: /var/lib/rabbitmq
   volumeClaimTemplates:
   - metadata:
