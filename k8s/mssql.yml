@@ -42,20 +42,20 @@ spec:
   selector:
     app: mssql
   type: NodePort
-#---
-#apiVersion: v1
-#kind: PersistentVolume
-#metadata:
-#  name: mssql-pv
-#spec:
-#  accessModes:
-#  - ReadWriteOnce
-#  capacity:
-#    storage: 1Gi
-#  hostPath:
-#    path: /var/persistent/mssql
-#  storageClassName: standard
-#  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mssql-pv
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: /var/persistent/mssql
+  storageClassName: standard
+  volumeMode: Filesystem
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -78,19 +78,18 @@ spec:
         - configMapRef:
             name: mssql-configmap
         name: mssql
-        image: mcr.microsoft.com/mssql/server
+        image: mcr.microsoft.com/mssql/server:2017-latest # Volume mounts don't work with 2019 :(
         ports:
         - containerPort: 1433
-#        volumeMounts:
-#        - name: mssql-pvc
-           # TODO: need to use data volume containers, otherwise the permissions get screwed up
-#          mountPath: /var/opt/mssql
-#  volumeClaimTemplates:
-#  - metadata:
-#      name: mssql-pvc
-#    spec:
-#      accessModes: [ "ReadWriteOnce" ]
-#      storageClassName: standard
-#      resources:
-#        requests:
-#          storage: 1Gi
+        volumeMounts:
+        - name: mssql-pvc
+          mountPath: /var/opt/mssql
+  volumeClaimTemplates:
+  - metadata:
+      name: mssql-pvc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 1Gi
