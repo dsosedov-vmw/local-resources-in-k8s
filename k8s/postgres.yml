@@ -77,7 +77,7 @@ spec:
         - configMapRef:
             name: postgres-configmap
         name: postgres
-        image: postgres
+        image: postgres:alpine
         ports:
         - containerPort: 5432
         volumeMounts:

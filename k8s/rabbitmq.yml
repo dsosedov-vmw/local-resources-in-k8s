@@ -82,7 +82,7 @@ spec:
         - configMapRef:
             name: rabbitmq-configmap
         name: rabbitmq
-        image: rabbitmq:management
+        image: rabbitmq:management-alpine
         ports:
         - containerPort: 4369
         - containerPort: 5672
