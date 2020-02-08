@@ -63,4 +63,4 @@ spec:
         ports:
         - containerPort: 8080
         securityContext:
-          allowPrivilegeEscalation: true
+          privileged: true
