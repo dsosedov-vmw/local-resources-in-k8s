@@ -1,0 +1,72 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jenkins
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-external-service
+  namespace: jenkins
+spec:
+  ports:
+  - name: http
+    nodePort: 30002
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: jenkins
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jenkins-pv
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 200Mi
+  hostPath:
+    # Need to run this on the host - sudo chown 1000:1000 /var/persistent/jenkins
+    path: /var/persistent/jenkins
+  storageClassName: standard
+  volumeMode: Filesystem
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  serviceName: jenkins-external-service
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:alpine
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        volumeMounts:
+        - name: jenkins-pvc
+          mountPath: /var/jenkins_home
+  volumeClaimTemplates:
+  - metadata:
+      name: jenkins-pvc
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: standard
+      resources:
+        requests:
+          storage: 200Mi
