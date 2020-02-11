@@ -53,7 +53,7 @@ metadata:
   name: rabbitmq-pv
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   capacity:
     storage: 100Mi
   hostPath:
@@ -95,7 +95,8 @@ spec:
   - metadata:
       name: rabbitmq-pvc
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes:
+      - ReadWriteOnce
       storageClassName: standard
       resources:
         requests:

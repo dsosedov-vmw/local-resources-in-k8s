@@ -1,4 +1,3 @@
-# TODO: the UI and the database connection work but worker connections fail - need to figure that out
 ---
 apiVersion: v1
 kind: Namespace
