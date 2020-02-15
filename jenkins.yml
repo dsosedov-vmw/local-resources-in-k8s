@@ -7,6 +7,20 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
+  name: jenkins-internal-service
+  namespace: jenkins
+spec:
+  ports:
+  - port: 50000
+    protocol: TCP
+    targetPort: 50000
+  selector:
+    app: jenkins
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: jenkins-external-service
   namespace: jenkins
 spec:
